@@ -1,0 +1,530 @@
+<!doctype html>
+<html ng-app="myApp" lang="ru">
+  <head>
+    <title>Офисный планктон</title>
+    <meta http-equiv=Content-Type content="text/html;charset=UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+  
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">Plankton</a>
+        </div>
+        <div class="container">
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          </div>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+    
+      <h3>Справочник планктона</h3>
+      
+<div class="panel panel-default" ng-controller="planktonTable">
+  <div class="panel-heading">Таблица планктончиков
+    <div class="btn-group btn-group-xs" role="group">
+      <button type="button" class="btn btn-default" ng-click="add()"><i class="glyphicon glyphicon-plus"></i> Добавить</button>
+    </div>
+    <div class="pull-right">
+      <div class="btn-group btn-group-xs" role="group">  
+        <button type="button" class="btn btn-default" ng-click="clear()"><i class="glyphicon glyphicon-trash"></i> Удалить всех</button>
+      </div>
+    </div>
+  </div>
+        
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Имя</th>
+        <th>Офис</th>
+        <th>Описание</th>
+        <Th>Управление</Th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="item in list | limitTo:pager.limit:(pager.page * pager.limit)">
+        <td>{{pager.limit * pager.page + $index + 1}}</td>
+        <td>{{item.name}}</td>
+        <td>{{offices[item.office] || item.office}}</td>
+        <td style="white-space: pre;">{{item.description}}</td>
+        <td>
+          <div class="btn-group btn-group-xs">
+            <button type="button" class="btn btn-default" ng-click="edit(item)"><i class="glyphicon glyphicon-edit"></i> Изменить</button>
+          </div>
+          <div class="btn-group btn-group-xs">
+            <button type="button" class="btn btn-default" ng-click="remove(item)"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+        
+  <div class="panel-footer">
+    <div class="row">
+      <div class="col-sm-4">Всего в списке: {{list.length}}</div>
+      <div class="col-sm-8">
+        <form class="form-inline pull-right">
+          <div class="form-group">
+            <label>Показывать на странице </label>
+            <select class="form-control input-sm" ng-model="pager.limit" ng-options="i for i in [5, 10, 15]" ng-change="pager.page=0"></select>
+          </div>
+          <div class="form-group form-group-sm">
+            <label class="control-label">Страница</label>
+            <button class="btn btn-default btn-sm" ng-disabled="pager.page <= 0" ng-click="pager.page = pager.page - 1">&lt;&lt;</button>
+            <select class="form-control input-sm" ng-model="pager.page" ng-options="i + 1 for i in pager.pages"></select>
+            <button class="btn btn-default btn-sm" ng-disabled="pager.page +1 >= pager.pages.length" ng-click="pager.page = pager.page + 1">&gt;&gt;</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default" ng-controller="officeTable">
+  <div class="panel-heading">Таблица офисов для планктончиков
+    <div class="btn-group btn-group-xs" role="group">
+      <button type="button" class="btn btn-default" ng-click="add()"><i class="glyphicon glyphicon-plus"></i> Добавить</button>
+    </div>
+    <div class="pull-right">
+      <div class="btn-group btn-group-xs" role="group">  
+        <button type="button" class="btn btn-default" ng-click="clear()"><i class="glyphicon glyphicon-trash"></i> Удалить всех</button>
+      </div>
+    </div>
+  </div>
+        
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Название</th>
+        <Th>Управление</Th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="item in list | limitTo:pager.limit:(pager.page * pager.limit)">
+        <td>{{pager.limit * pager.page + $index + 1}}</td>
+        <td>{{item.name}}</td>
+        <td>
+          <div class="btn-group btn-group-xs">
+            <button type="button" class="btn btn-default" ng-click="edit(item)"><i class="glyphicon glyphicon-edit"></i> Изменить</button>
+          </div>
+          <div class="btn-group btn-group-xs">
+            <button type="button" class="btn btn-default" ng-click="remove(item)"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+        
+  <div class="panel-footer">
+    <div class="row">
+      <div class="col-sm-4">Всего в списке: {{list.length}}</div>
+      <div class="col-sm-8">
+        <form class="form-inline pull-right">
+          <div class="form-group">
+            <label>Показывать на странице </label>
+            <select class="form-control input-sm" ng-model="pager.limit" ng-options="i for i in [5, 10, 15]" ng-change="pager.page=0"></select>
+          </div>
+          <div class="form-group form-group-sm">
+            <label class="control-label">Страница</label>
+            <button class="btn btn-default btn-sm" ng-disabled="pager.page <= 0" ng-click="pager.page = pager.page - 1">&lt;&lt;</button>
+            <select class="form-control input-sm" ng-model="pager.page" ng-options="i + 1 for i in pager.pages"></select>
+            <button class="btn btn-default btn-sm" ng-disabled="pager.page +1 >= pager.pages.length" ng-click="pager.page = pager.page + 1">&gt;&gt;</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+    
+    <div class="modal fade" id="editPlankton" ng-controller="editPlankton">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{newItem ? 'Новый планктон' : 'Изменить планктон'}}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" class="form-control" ng-model="item.name">
+            </div>
+            <div class="form-group">
+              <label>Офис</label>
+              <select class="form-control" ng-model="item.office" ng-options="e.id as e.name for e in offices"></select>
+            </div>
+            <div class="form-group">
+              <label>Описание</label>
+              <textarea class="form-control" ng-model="item.description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" ng-click="submit()">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="editOffice" ng-controller="editOffice">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{newItem ? 'Новый офис' : 'Изменить офис #' + item.id}}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" class="form-control" ng-model="item.name">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" ng-click="submit()">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="confirmDialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">#здесь_могла_быть_ваша_реклама</h4>
+          </div>
+          <div class="modal-body">
+            #здесь_могла_быть_ваша_реклама
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default reject">Отмена</button>
+            <button type="button" class="btn btn-primary confirm">Подтверждаю</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <script type="text/javascript">
+      window.offices = [
+          {id: 1, name: 'Аквариум'},
+          {id: 2, name: 'Городской пруд'},
+          {id: 3, name: 'ул. Мира 10, оф. 64'},
+      ];
+      
+      window.plankton = [
+    	  {name: 'Планктон'    , office: 1, description: 'Заместитель директора'},
+    	  {name: 'Джошуа'      , office: 2, description: 'Главный по аквариуму'},
+    	  {name: 'Алиса'       , office: 1, description: 'Заведущая пищеблоком'},
+    	  {name: 'Паук Василий', office: 5, description: 'Надзорный'},
+    	  {name: 'Муромец Илья', office: 2, description: 'Богатырь'},
+    	  {name: 'Комар Игнат' , office: 2, description: 'Дижей'},
+      ];
+    
+      var app = angular.module("myApp", []);
+      
+      app.
+      factory('jquery', ['$window', function($window) {
+          return $window.jQuery;
+      }]).
+      factory('confirm', ['jquery', '$q', function($, $q) {
+          var $dialog = $('#confirmDialog');
+          var deferred;
+          
+          $dialog.on('click', '.confirm', function(){
+              $dialog.modal('hide');
+              deferred.resolve();
+          });
+          
+          $dialog.on('click', '.reject', function(){
+              $dialog.modal('hide');
+              deferred.reject();
+          });
+
+          var _confirm = function(html, title) {
+            deferred = $q.defer();
+            
+            $dialog.find('.modal-body').html(html || 'Вы действительно хотите сделать это?');
+            $dialog.find('.modal-title').text(title || 'Вы уверены?');
+            
+            $dialog.modal('show');
+            
+            return deferred.promise;
+          };
+          
+          return {
+              confirm: _confirm
+          }
+      }]).
+      factory('officeService', ['$rootScope', '$window', 'confirm', function($rootScope, $window, $confirm) {
+          var $scope  = $rootScope.$new(true);
+          var _list   = $window.offices || [];
+          var _source = {};
+          var _nextId = 1000;
+          
+          $scope.map = {};
+          
+          var _items = function() {
+              return _list;
+          };
+          
+          var _updateMap = function() {
+              var map = {};
+              for (var i = 0, len = _list.length; i < len; i++) {
+                  map[_list[i].id] = _list[i].name;
+              }
+              $scope.map = map;
+              _nextId = _list.length + 1;
+          }
+
+          var _editItem = function(item) {
+              _source = item;
+              $scope.$emit('edit-item', angular.copy(item));
+          };
+          
+          var _addItem = function() {
+              $scope.$emit('edit-item');
+          };
+          
+          var _removeItem = function(item) {
+              var index = _list.indexOf(item);
+              
+              if (index > -1) {
+                  $confirm.confirm('Вы действительно хотите удалить '+ item.name +'?').then(function(){
+                      _list.splice(index, 1);
+                      _updateMap();
+                  }, function() {});
+              }
+          };
+          
+          var _removeAll = function() {
+              $confirm.confirm('Вы действительно хотите удалить все офисы?', 'О, нет!').then(function(){
+                _list.length = 0;
+                _updateMap();
+              }, function() {});
+          };
+          
+          $scope.$on('update-item', function(event, item){
+              angular.copy(item, _source);
+              _updateMap();
+          });
+          
+          $scope.$on('add-item', function(event, item){
+              item.id = _nextId;
+              _list.unshift(item);
+              _updateMap();
+          });
+          
+          _updateMap();
+          
+          return {
+              scope    : $scope,
+              items    : _items,
+              map      : $scope.map,
+              edit     : _editItem,
+              add      : _addItem,
+              remove   : _removeItem,
+              removeAll: _removeAll
+          };
+      }]).
+      factory('planktonService', ['$rootScope', '$window', 'confirm', function($rootScope, $window, $confirm) {
+    	  var $scope = $rootScope.$new(true);
+    	  var _list = $window.plankton || [];
+    	  var _source;
+    	  
+    	  var _items = function() {
+    		  return _list;
+    	  }
+    	  
+    	  var _addItem = function() {
+    		  $scope.$emit('edit-item');
+    	  };
+    	  
+    	  var _editItem = function(item) {
+    		  _source = item;
+    		  $scope.$emit('edit-item', angular.copy(item));
+    	  };
+    	  
+    	  var _removeItem = function(item) {
+    		  var index = _list.indexOf(item);
+    		  
+    		  if (index > -1) {
+    		      $confirm.confirm('Вы действительно хотите удалить '+ item.name +'?').then(function(){
+    		          _list.splice(index, 1);
+  		          }, function() {});
+    		  }
+    	  };
+    	  
+    	  var _removeAll = function() {
+    	      $confirm.confirm('Вы действительно хотите удалить весь планктон?', 'Ахтунг!').then(function(){
+  		        _list.length = 0;
+              }, function() {});
+    	  };
+    	  
+    	  $scope.$on('update-item', function(event, item){
+    		  angular.copy(item, _source);
+    	  });
+    	  
+          $scope.$on('add-item', function(event, item){
+              _list.unshift(item);
+          });
+    	  
+    	  return {
+    		  items     : _items,
+    		  addItem   : _addItem,
+    		  editItem  : _editItem,
+    		  removeItem: _removeItem,
+    		  removeAll : _removeAll,
+    		  scope     : $scope
+    	  };
+      }]);
+      
+      app.controller('planktonTable', ['$scope', 'planktonService', 'officeService', function($scope, service, offices){
+    	  $scope.list  = service.items();
+    	  $scope.pager = {};
+    	  
+    	  $scope.pager.page = 0;
+    	  $scope.pager.limit = 5;
+    	  $scope.pager.pages = [];
+    	  $scope.offices = offices.map;
+    	  
+    	  offices.scope.$watch('map', function(n,o){
+    	      $scope.offices = n;
+    	  });
+    	  
+    	  var recalcPages = function(newLength, oldLength) {
+    		  var newPages = Math.ceil(($scope.list.length || 1) / $scope.pager.limit);
+    		  $scope.pager.pages = Array.from(Array(newPages).keys());
+    		  
+    		  if (oldLength < newLength) {
+    			  $scope.pager.page = 0;
+    		  } else if ($scope.pager.page > newPages - 1) {
+    			  $scope.pager.page = newPages - 1;
+    		  }
+    	  };
+    	  
+    	  $scope.$watch('list.length', recalcPages);
+          $scope.$watch('pager.limit', recalcPages);
+    	  
+    	  $scope.edit = function(item) {
+    		  service.editItem(item);
+    	  };
+    	  
+    	  $scope.add = function() {
+    		  service.addItem();
+    	  };
+    	  
+    	  $scope.remove = function(item) {
+    		  service.removeItem(item);
+    	  };
+    	  
+    	  $scope.clear = function() {
+    		  service.removeAll();
+    	  };
+      }]);
+      
+      app.controller('editPlankton', ['$scope', 'planktonService', 'officeService', 'jquery', function($scope, service, offices, $){
+    	  var $dialog = $('#editPlankton');
+    	  
+    	  $scope.newItem = true;
+    	  $scope.item = {};
+    	  $scope.offices = offices.items();
+    	  
+    	  service.scope.$on('edit-item', function(event, item) {
+    		  $scope.newItem = item == undefined;
+    		  $scope.item = item || {};
+    		  $dialog.modal('show');
+    	  });
+    	  
+    	  $scope.submit = function(){
+    		  $dialog.modal('hide');
+    		  
+    		  if ($scope.newItem) {
+    			  service.scope.$emit('add-item', $scope.item);
+    		  } else {
+    		      service.scope.$emit('update-item', $scope.item);
+    		  }
+    	  };
+      }]);
+      
+      app.controller('officeTable', ['$scope', 'officeService', function($scope, offices){
+          $scope.list = offices.items();
+          $scope.pager = {
+            page: 0,
+            limit: 5,
+            pages: []
+          };
+          
+          var recalcPages = function(newLength, oldLength) {
+              var newPages = Math.ceil(($scope.list.length || 1) / $scope.pager.limit);
+              $scope.pager.pages = Array.from(Array(newPages).keys());
+              
+              if (oldLength < newLength) {
+                  $scope.pager.page = 0;
+              } else if ($scope.pager.page > newPages - 1) {
+                  $scope.pager.page = newPages - 1;
+              }
+          };
+          
+          $scope.$watch('list.length', recalcPages);
+          $scope.$watch('pager.limit', recalcPages);
+          
+          $scope.edit = function(item) {
+              offices.edit(item);
+          };
+          
+          $scope.add = function() {
+              offices.add();
+          };
+          
+          $scope.remove = function(item){
+              offices.remove(item);
+          };
+          
+          $scope.clear = function() {
+              offices.removeAll();
+          };
+      }]);
+      
+      app.controller('editOffice', ['$scope', 'officeService', 'jquery', function($scope, offices, $){
+          var $dialog = $('#editOffice');
+          
+          $scope.newItem = true;
+          $scope.item = {};
+          
+          offices.scope.$on('edit-item', function(event, item) {
+              $scope.newItem = item == undefined;
+              $scope.item = item || {};
+              $dialog.modal('show');
+          });
+          
+          $scope.submit = function(){
+              $dialog.modal('hide');
+              
+              if ($scope.newItem) {
+                  offices.scope.$emit('add-item', $scope.item);
+              } else {
+                  offices.scope.$emit('update-item', $scope.item);
+              }
+          };
+      }]);
+    </script>
+  </body>
+</html>

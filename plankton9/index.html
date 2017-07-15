@@ -1,0 +1,416 @@
+<!doctype html>
+<html ng-app="myApp" lang="ru">
+  <head>
+    <title>Офисный планктон</title>
+    <meta http-equiv=Content-Type content="text/html;charset=UTF-8">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/locales/bootstrap-datepicker.ru.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/i18n/ru.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    
+    <script src="js/app.js"></script>
+    <script src="js/confirm.js"></script>
+    <script src="js/office.service.js"></script>
+    <script src="js/office.table.js"></script>
+    <script src="js/office.editDialog.js"></script>
+    <script src="js/plankton.service.js"></script>
+    <script src="js/plankton.table.js"></script>
+    <script src="js/plankton.editDialog.js"></script>
+    <script src="js/exportController.js"></script>
+    <script src="js/datepicker.js"></script>
+    <script src="js/select2.js"></script>
+    <script src="js/notify.js"></script>
+    
+    <style type="text/css">
+      .tab-pane {padding-top: 20px;}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">Plankton</a>
+        </div>
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <p class="navbar-text">Пример реализации справочника на AngularJS + Bootstrap Modal + jQuery + Select2 + Bootstrap Datepicker</p>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <h1>Справочник планктона</h1>
+      <div>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#list" data-toggle="tab">Планктончики</a></li>
+          <li><a href="#plankton" data-toggle="tab">Справочник планктончиков</a></li>
+          <li><a href="#office" data-toggle="tab">Справочник офисов</a></li>
+          <li><a href="#json" data-toggle="tab">JSON</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="list" ng-controller="planktonTable">
+            <div class="media" ng-repeat="item in list">
+              <div class="media-left">
+                <img class="media-object img-circle" style="background-color: #ddd" ng-src="icons/{{item.avatar || 'default.png'}}" alt="">
+              </div>
+              <div class="media-body">
+                <h4 class="media-heading"><a href="" ng-click="edit(item)">{{item.name}}</a></h4>
+                <div>{{item.description}}</div>
+                <ul class="list-inline small">
+                  <li>Офис: {{offices[item.office].name}}</li>
+                  <li>Адрес: {{offices[item.office].address}}</li>
+                  <li>День рождения: {{item.dob}}</li>
+                </ul>
+              </div>
+            </div>
+            <p class="text-right small">Иконки предоствил <a target="_blank" href="http://www.flaticon.com/authors/freepik">Freepik</a></p>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="plankton">
+            <div class="panel panel-default" ng-controller="planktonTable">
+              <div class="panel-heading">Таблица планктончиков
+                <div class="btn-group btn-group-xs" role="group">
+                  <button type="button" class="btn btn-default" ng-click="add()"><i class="glyphicon glyphicon-plus"></i> Добавить</button>
+                </div>
+                <div class="pull-right">
+                  <div class="btn-group btn-group-xs" role="group">  
+                    <button type="button" class="btn btn-default" ng-click="clear()"><i class="glyphicon glyphicon-trash"></i> Удалить всех</button>
+                  </div>
+                </div>
+              </div>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Имя</th>
+                    <th>Офис</th>
+                    <th>Описание</th>
+                    <Th>Управление</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="item in list | limitTo:pager.limit:(pager.page * pager.limit)">
+                    <td>{{pager.limit * pager.page + $index + 1}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{offices[item.office].name || item.office}}</td>
+                    <td style="white-space: pre;">{{item.description}}</td>
+                    <td>
+                      <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default" ng-click="edit(item)"><i class="glyphicon glyphicon-edit"></i> Изменить</button>
+                      </div>
+                      <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default" ng-click="remove(item)"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="panel-footer">
+                <div class="row">
+                  <div class="col-sm-4">Всего в списке: {{list.length}}</div>
+                  <div class="col-sm-8">
+                    <form class="form-inline pull-right">
+                      <div class="form-group">
+                        <label>Показывать на странице </label>
+                        <select class="form-control input-sm" ng-model="pager.limit" ng-options="i for i in [5, 10, 15]" ng-change="pager.page=0"></select>
+                      </div>
+                      <div class="form-group form-group-sm">
+                        <label class="control-label">Страница</label>
+                        <button class="btn btn-default btn-sm" ng-disabled="pager.page <= 0" ng-click="pager.page = pager.page - 1">&lt;&lt;</button>
+                        <select class="form-control input-sm" ng-model="pager.page" ng-options="i + 1 for i in pager.pages"></select>
+                        <button class="btn btn-default btn-sm" ng-disabled="pager.page +1 >= pager.pages.length" ng-click="pager.page = pager.page + 1">&gt;&gt;</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="office">
+            <div class="panel panel-default" ng-controller="officeTable">
+              <div class="panel-heading">Таблица офисов для планктончиков
+                <div class="btn-group btn-group-xs" role="group">
+                  <button type="button" class="btn btn-default" ng-click="add()"><i class="glyphicon glyphicon-plus"></i> Добавить</button>
+                </div>
+                <div class="pull-right">
+                  <div class="btn-group btn-group-xs" role="group">  
+                    <button type="button" class="btn btn-default" ng-click="clear()"><i class="glyphicon glyphicon-trash"></i> Удалить всех</button>
+                  </div>
+                </div>
+              </div>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Название</th>
+                    <th>Адрес</th>
+                    <Th>Управление</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="item in list | limitTo:pager.limit:(pager.page * pager.limit)">
+                    <td>{{pager.limit * pager.page + $index + 1}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.address}}</td>
+                    <td>
+                      <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default" ng-click="edit(item)"><i class="glyphicon glyphicon-edit"></i> Изменить</button>
+                      </div>
+                      <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default" ng-click="remove(item)"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="panel-footer">
+                <div class="row">
+                  <div class="col-sm-4">Всего в списке: {{list.length}}</div>
+                  <div class="col-sm-8">
+                    <form class="form-inline pull-right">
+                      <div class="form-group">
+                        <label>Показывать на странице </label>
+                        <select class="form-control input-sm" ng-model="pager.limit" ng-options="i for i in [5, 10, 15]" ng-change="pager.page=0"></select>
+                      </div>
+                      <div class="form-group form-group-sm">
+                        <label class="control-label">Страница</label>
+                        <button class="btn btn-default btn-sm" ng-disabled="pager.page <= 0" ng-click="pager.page = pager.page - 1">&lt;&lt;</button>
+                        <select class="form-control input-sm" ng-model="pager.page" ng-options="i + 1 for i in pager.pages"></select>
+                        <button class="btn btn-default btn-sm" ng-disabled="pager.page +1 >= pager.pages.length" ng-click="pager.page = pager.page + 1">&gt;&gt;</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="json" ng-controller="exportController">
+              <pre><code>{{data | json}}</code></pre>
+          </div>
+        </div>
+      </div>
+      <div>
+        <hr>
+        <p class="text-muted text-right small">&copy; 2017 <a href="https://anton-pribora.ru">Антон Прибора</a></p>
+      </div>
+    </div>      
+    <div class="modal fade" id="editPlankton" ng-controller="editPlankton">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{newItem ? 'Новый планктон' : 'Изменить планктон'}}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" class="form-control" ng-model="item.name">
+            </div>
+            <div class="form-group">
+              <label>Аватарка</label>
+              <select class="form-control select2" id="avatar-list" ng-select2 ng-model="item.avatar">
+                <option value="">(не указано)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>День рождения</label>
+              <div class="input-group date" ng-datepicker ng-model="item.dob">
+                <input type="text" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Офис</label>
+              <select class="form-control" ng-model="item.office" ng-options="e.id as e.name for e in offices"></select>
+            </div>
+            <div class="form-group">
+              <label>Описание</label>
+              <textarea class="form-control" ng-model="item.description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" ng-click="submit()">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="editOffice" ng-controller="editOffice">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{newItem ? 'Новый офис' : 'Изменить офис #' + item.id}}</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" class="form-control" ng-model="item.name">
+            </div>
+            <div class="form-group">
+              <label>Адрес</label>
+              <input type="text" class="form-control" ng-model="item.address">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" ng-click="submit()">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="confirmDialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">#здесь_могла_быть_ваша_реклама</h4>
+          </div>
+          <div class="modal-body">
+            #здесь_могла_быть_ваша_реклама
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default reject">Отмена</button>
+            <button type="button" class="btn btn-primary confirm">Подтверждаю</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      window.offices = [
+        {
+          "id": 1,
+          "name": "Аквариум",
+          "address": "г. Озёрск, ул. Тюльпанов, д. 8"
+        },
+        {
+          "id": 2,
+          "name": "Городской пруд",
+          "address": "г. Новопрудово, пер. Водопадный, д. 23"
+        },
+        {
+          "id": 3,
+          "name": "Инфузория",
+          "address": "г. Мирный, пр. Ленина, д. 27"
+        }
+      ];
+      
+      window.plankton = [
+        {
+          "name": "Планктон",
+          "dob": "10.12.2007",
+          "office": 1,
+          "description": "Заместитель директора",
+          "avatar": "016-girl-2.png"
+        },
+        {
+          "name": "Джошуа",
+          "dob": "10.11.2007",
+          "office": 2,
+          "description": "Главный по аквариуму",
+          "avatar": "010-boy-4.png"
+        },
+        {
+          "name": "Алиса",
+          "dob": "10.10.2007",
+          "office": 1,
+          "description": "Заведущая пищеблоком",
+          "avatar": "011-girl-5.png"
+        },
+        {
+          "name": "Паук Василий",
+          "dob": "10.09.2007",
+          "office": 5,
+          "description": "Надзорный",
+          "avatar": "015-boy-1.png"
+        },
+        {
+          "name": "Муромец Илья",
+          "dob": "10.08.2007",
+          "office": 2,
+          "description": "Богатырь",
+          "avatar": "007-boy-5.png"
+        },
+        {
+          "name": "Комар Игнат",
+          "dob": "10.07.2007",
+          "office": 2,
+          "description": "Диджей",
+          "avatar": "013-boy-3.png"
+        }
+      ];
+      
+      window.avatars = [
+        {id: "001-boy-7.png" , text: "001-boy-7.png"},
+        {id: "002-girl-9.png", text: "002-girl-9.png"},
+        {id: "003-girl.png"  , text: "003-girl.png"},
+        {id: "004-boy-2.png" , text: "004-boy-2.png"},
+        {id: "005-boy-6.png" , text: "005-boy-6.png"},
+        {id: "006-girl-8.png", text: "006-girl-8.png"},
+        {id: "007-boy-5.png" , text: "007-boy-5.png"},
+        {id: "008-girl-7.png", text: "008-girl-7.png"},
+        {id: "009-girl-6.png", text: "009-girl-6.png"},
+        {id: "010-boy-4.png" , text: "010-boy-4.png"},
+        {id: "011-girl-5.png", text: "011-girl-5.png"},
+        {id: "012-girl-4.png", text: "012-girl-4.png"},
+        {id: "013-boy-3.png" , text: "013-boy-3.png"},
+        {id: "014-girl-3.png", text: "014-girl-3.png"},
+        {id: "015-boy-1.png" , text: "015-boy-1.png"},
+        {id: "016-girl-2.png", text: "016-girl-2.png"},
+        {id: "017-girl-1.png", text: "017-girl-1.png"},
+        {id: "018-boy.png"   , text: "018-boy.png"}
+      ];
+      
+      $.fn.select2.defaults.set("theme", "bootstrap");
+      $.fn.select2.defaults.set("language", "ru");
+      $.fn.select2.defaults.set("width", "100%");
+      
+      var formatState = function (state) {
+          if (!state.id) {
+              return state.text;
+          }
+          
+          var $state = $('<span><img width="32" src="icons/' + state.element.value + '" class="img" /> ' + state.text + '</span>');
+          
+          return $state;
+      };
+      
+      $("#avatar-list").select2({
+          data: avatars,
+          templateResult: formatState,
+          templateSection: formatState
+      });
+      
+      $.notifyDefaults({
+          type: 'success',
+          placement: {
+              from: 'top',
+              align: 'center'
+          },
+          animate: {
+              enter: 'animated slideInDown',
+              exit: 'animated zoomOut'
+          }
+      });
+    </script>
+  </body>
+</html>
