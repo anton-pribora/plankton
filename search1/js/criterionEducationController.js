@@ -50,9 +50,9 @@ function($scope, service, $) {
             }
         });
         
-        $scope.criterion.text = 'Образование: ' + text.join(", ");
-        
         if (text.length) {
+            $scope.criterion.text = 'Образование: ' + text.join(", ");
+            
             if (source) {
                 angular.copy($scope.criterion, source);
             }

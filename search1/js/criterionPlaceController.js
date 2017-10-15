@@ -34,9 +34,16 @@ function($scope, service, $) {
     };
     
     $scope.submit = function() {
-        $scope.criterion.text  = 'Город: ' + $scope.criterion.value;
+        var value = $scope.criterion.value;
+        var text = [];
         
-        if ($scope.criterion.value) {
+        if (value) {
+            text.push(value);
+        }
+        
+        if (text.length) {
+            $scope.criterion.text = 'Город: ' + text.join(", ");
+            
             if (source) {
                 angular.copy($scope.criterion, source);
             }

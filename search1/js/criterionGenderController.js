@@ -34,19 +34,19 @@ function($scope, service, $) {
     };
     
     $scope.submit = function() {
+        var value = $scope.criterion.value;
         var text = [];
         
-        if ($scope.criterion.value == "m") {
+        if (value == "m") {
             text.push("мужской");
         }
         
-        if ($scope.criterion.value == "f") {
+        if (value == "f") {
             text.push("женский");
         }
         
-        $scope.criterion.text  = 'Пол: ' + text.join(" ");
-        
-        if ($scope.criterion.value) {
+        if (text.length) {
+            $scope.criterion.text  = 'Пол: ' + text.join(" ");
             if (source) {
                 angular.copy($scope.criterion, source);
             }

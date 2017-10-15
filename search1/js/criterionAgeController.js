@@ -34,19 +34,20 @@ function($scope, service, $) {
     };
     
     $scope.submit = function() {
+        var value = $scope.criterion.value;
         var text = [];
         
-        if ($scope.criterion.value.from) {
+        if (value && value.from) {
             text.push("от " + $scope.criterion.value.from);
         }
         
-        if ($scope.criterion.value.to) {
+        if (value && value.to) {
             text.push("до " + $scope.criterion.value.to);
         }
         
-        $scope.criterion.text  = 'Возраст: ' + text.join(" ");
-        
         if (text.length) {
+            $scope.criterion.text  = 'Возраст: ' + text.join(" ");
+            
             if (source) {
                 angular.copy($scope.criterion, source);
             }

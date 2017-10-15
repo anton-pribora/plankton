@@ -45,11 +45,11 @@ function($scope, service, $) {
         var value = $scope.criterion.value;
         var text = [];
         
-        if (value.lang) {
+        if (value && value.lang) {
             text.push(value.lang);
         }
         
-        if (value.level) {
+        if (value && value.level) {
             text.push($scope.langLevels[value.level]);
         }
         
