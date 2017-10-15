@@ -1,14 +1,14 @@
 <?php
 
-$list = [];
-
-foreach (glob(__DIR__ .'/plankton*') as $i => $folder) {
-    $list[] = [
-        'name' => 'Этап '. ($i + 1),
-        'url'  => basename($folder) .'/',
-        'text' => file_exists("$folder/README.txt") ? file_get_contents("$folder/README.txt") : '',
-    ];
-}
+$list = function ($mask) {
+    foreach (glob(__DIR__ .'/'. $mask) as $i => $folder) {
+        yield [
+            'name' => 'Этап '. ($i + 1),
+            'url'  => basename($folder) .'/',
+            'text' => file_exists("$folder/README.txt") ? file_get_contents("$folder/README.txt") : '',
+        ];
+    }
+};
 
 ?>
 <!doctype html>
@@ -27,7 +27,14 @@ foreach (glob(__DIR__ .'/plankton*') as $i => $folder) {
     <div class="container">
       <h1>Эволюция плакнтона</h1>
       <ul class="list-unstyled">
-<?php foreach ($list as $item) {?>
+<?php foreach ($list('plankton*') as $item) {?>
+        <li><a href="<?php echo $item['url']?>"><?php echo $item['name']?></a> &mdash; <?php echo $item['text']?></li>
+<?php }?>
+      </ul>
+      <hr>
+      <h2>Форма поиска для планктона</h2>
+      <ul class="list-unstyled">
+<?php foreach ($list('search*') as $item) {?>
         <li><a href="<?php echo $item['url']?>"><?php echo $item['name']?></a> &mdash; <?php echo $item['text']?></li>
 <?php }?>
       </ul>
