@@ -29,23 +29,22 @@ function($scope, service) {
         }
     });
     
-    $scope.$watch('chips.length', function(n,o){
+    $scope.submit = function() {
         var values = [];
         
-        if (n) {
-            angular.forEach($scope.chips, function(chip) {
-                values.push([chip.type, chip.value]);
-            });
-        }
-    
+        angular.forEach($scope.chips, function(chip) {
+            values.push([chip.type, chip.value]);
+        });
+
         $scope.encodedValues = b64EncodeUnicode(angular.toJson(values));
-    });
+        
+        return true;
+    };
     
     function b64EncodeUnicode(str) {
         return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
             function toSolidBytes(match, p1) {
                 return String.fromCharCode('0x' + p1);
         }));
-    }
-
+    };
 } ]);
